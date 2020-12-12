@@ -4,6 +4,78 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Audio Player</title>
+
+    <style>
+      /* The snackbar - position it at the bottom and in the middle of the screen */
+      #snackbar {
+        visibility: hidden; /* Hidden by default. Visible on click */
+        min-width: 250px; /* Set a default minimum width */
+        margin-left: -125px; /* Divide value of min-width by 2 */
+        background-color: #333; /* Black background color */
+        color: #fff; /* White text color */
+        text-align: center; /* Centered text */
+        border-radius: 2px; /* Rounded borders */
+        padding: 16px; /* Padding */
+        position: fixed; /* Sit on top of the screen */
+        z-index: 1; /* Add a z-index if needed */
+        left: 50%; /* Center the snackbar */
+        bottom: 30px; /* 30px from the bottom */
+      }
+
+      /* Show the snackbar when clicking on a button (class added with JavaScript) */
+      #snackbar.show {
+        visibility: visible; /* Show the snackbar */
+        /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+  However, delay the fade out process for 2.5 seconds */
+        -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        animation: fadein 0.5s, fadeout 0.5s 2.5s;
+      }
+
+      /* Animations to fade the snackbar in and out */
+      @-webkit-keyframes fadein {
+        from {
+          bottom: 0;
+          opacity: 0;
+        }
+        to {
+          bottom: 30px;
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadein {
+        from {
+          bottom: 0;
+          opacity: 0;
+        }
+        to {
+          bottom: 30px;
+          opacity: 1;
+        }
+      }
+
+      @-webkit-keyframes fadeout {
+        from {
+          bottom: 30px;
+          opacity: 1;
+        }
+        to {
+          bottom: 0;
+          opacity: 0;
+        }
+      }
+
+      @keyframes fadeout {
+        from {
+          bottom: 30px;
+          opacity: 1;
+        }
+        to {
+          bottom: 0;
+          opacity: 0;
+        }
+      }
+    </style>
   </head>
   <body>
     <!-- The text areas -->
@@ -69,18 +141,23 @@
       />
     </div>
 
+    <div id="snackbar">Copied to Clipboard</div>
+
     <script>
-      let audioUrl = window.location.href.split('AudioSource=')[1]
+      let audioUrl = window.location.href.split('AudioSource=')[1];
       let audio = document.getElementById('audioPlayer');
       let loopButton = document.querySelector('#loopButton');
-        console.log(audioUrl)
-      audio.src = audioUrl ? audioUrl : 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
-    //   Rewind last two seconds of the audio
+      let snackBar = document.getElementById('snackbar');
+
+      audio.src = audioUrl
+        ? audioUrl
+        : 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+      //   Rewind last two seconds of the audio
       const rewind2Seconds = () => {
         audio.currentTime = audio.currentTime - 2;
       };
 
-    //   Set audio playback speed
+      //   Set audio playback speed
       document.querySelector('#audioPlaybackRange').oninput = function () {
         audio.playbackRate = Number(this.value);
         document.querySelector(
@@ -88,7 +165,7 @@
         ).innerHTML = `Playback speed: ${this.value}`;
       };
 
-    //   Copy text from the selected textarea to clipboard
+      //   Copy text from the selected textarea to clipboard
       const copyToClipBoard = (elementId) => {
         let areaId = `#${elementId}`;
         let str = document.querySelector(areaId).value;
@@ -98,9 +175,17 @@
         el.select();
         document.execCommand('copy');
         document.body.removeChild(el);
+
+        // Show snackbar
+        snackBar.className = 'show';
+
+        // After 3 seconds, remove the show class from DIV
+        setTimeout(function () {
+          snackBar.className = snackBar.className.replace('show', '');
+        }, 3000);
       };
 
-    //   If loop is enabled, loop last 2 seconds
+      //   If loop is enabled, loop last 2 seconds
       function audioloop() {
         let loopVal = audio.getAttribute('data-loopval');
         let isEnabled = audio.getAttribute('data-loopenabled');
@@ -110,7 +195,7 @@
         }
       }
 
-    //   Enable Loop for last 2 seconds
+      //   Enable Loop for last 2 seconds
       const enableLoop = () => {
         let isEnabled = audio.getAttribute('data-loopenabled');
         if (isEnabled === 'false') {
@@ -121,7 +206,7 @@
           audio.setAttribute('data-loopenabled', 'false');
           loopButton.innerHTML = 'Loop last 2 sec';
         }
-      }
+      };
     </script>
   </body>
 </html>
