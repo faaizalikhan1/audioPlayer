@@ -70,11 +70,11 @@
     </div>
 
     <script>
-        let r = new URLSearchParams(window.location.search)
-        console.log(r)
+      let audioUrl = window.location.href.split('AudioSource=')[1]
       let audio = document.getElementById('audioPlayer');
       let loopButton = document.querySelector('#loopButton');
 
+      audio.src = audioUrl ? audioUrl : 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
     //   Rewind last two seconds of the audio
       const rewind2Seconds = () => {
         audio.currentTime = audio.currentTime - 2;
