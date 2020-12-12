@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audio Player</title>
+  </head>
+  <body>
+    <!-- The text areas -->
+    <div>
+      <div>
+        <textarea
+          id="textArea1"
+          name="textArea1"
+          rows="4"
+          cols="50"
+          placeholder="Textarea 1"
+        ></textarea>
+        <button onclick="copyToClipBoard('textArea1')">
+          Copy to clipboard
+        </button>
+      </div>
+
+      <div>
+        <textarea
+          id="textArea2"
+          name="textArea2"
+          placeholder="Textarea 2"
+          rows="4"
+          cols="50"
+        ></textarea>
+        <button onclick="copyToClipBoard('textArea2')">
+          Copy to clipboard
+        </button>
+      </div>
+    </div>
+
+    <!-- The Audio Player -->
+    <audio
+      id="audioPlayer"
+      data-loopenabled="false"
+      data-loopval="0"
+      ontimeupdate="audioloop()"
+      controls
+      src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+    >
+      Your browser does not support the
+      <code>audio</code> element.
+    </audio>
+
+    <!-- Misc action buttons -->
+    <div>
+      <button onclick="rewind2Seconds()">Rewind</button>
+      <button id="loopButton" onclick="enableLoop()">Loop last 2 sec</button>
+    </div>
+
+    <!-- Playback selection slider -->
+    <div class="slidecontainer">
+      <p id="playbackSpeed">Playback speed - 1</p>
+      <label>Select Playback Speed</label>
+      <input
+        type="range"
+        min="0"
+        max="2"
+        step="0.1"
+        defaultvalue="1"
+        name="audioPlaybackSelector"
+        id="audioPlaybackRange"
+      />
+    </div>
+
+    <script>
+      let audio = document.getElementById('audioPlayer');
+      let loopButton = document.querySelector('#loopButton');
+
+    //   Rewind last two seconds of the audio
+      const rewind2Seconds = () => {
+        audio.currentTime = audio.currentTime - 2;
+      };
+
+    //   Set audio playback speed
+      document.querySelector('#audioPlaybackRange').oninput = function () {
+        audio.playbackRate = Number(this.value);
+        document.querySelector(
+          '#playbackSpeed'
+        ).innerHTML = `Playback speed: ${this.value}`;
+      };
+
+    //   Copy text from the selected textarea to clipboard
+      const copyToClipBoard = (elementId) => {
+        let areaId = `#${elementId}`;
+        let str = document.querySelector(areaId).value;
+        const el = document.createElement('textarea');
+        el.value = str;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      };
+
+    //   If loop is enabled, loop last 2 seconds
+      function audioloop() {
+        let loopVal = audio.getAttribute('data-loopval');
+        let isEnabled = audio.getAttribute('data-loopenabled');
+
+        if (isEnabled === 'true' && audio.currentTime >= loopVal) {
+          audio.currentTime = loopVal - 2;
+        }
+      }
+
+    //   Enable Loop for last 2 seconds
+      const enableLoop = () => {
+        let isEnabled = audio.getAttribute('data-loopenabled');
+        if (isEnabled === 'false') {
+          loopButton.innerHTML = 'Disable Loop';
+          audio.setAttribute('data-loopenabled', 'true');
+          audio.setAttribute('data-loopval', audio.currentTime);
+        } else {
+          audio.setAttribute('data-loopenabled', 'false');
+          loopButton.innerHTML = 'Loop last 2 sec';
+        }
+      }
+    </script>
+  </body>
+</html>
