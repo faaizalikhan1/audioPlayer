@@ -73,7 +73,7 @@
       let audioUrl = window.location.href.split('AudioSource=')[1]
       let audio = document.getElementById('audioPlayer');
       let loopButton = document.querySelector('#loopButton');
-
+        console.log(audioUrl)
       audio.src = audioUrl ? audioUrl : 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
     //   Rewind last two seconds of the audio
       const rewind2Seconds = () => {
