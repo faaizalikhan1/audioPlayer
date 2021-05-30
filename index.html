@@ -219,6 +219,7 @@
         <input
           id="isTranslationSwitchOn"
           type="checkbox"
+          onchange="translateText()"
           class="switch-input"
           checked
         />
@@ -284,11 +285,12 @@
     </div>
     <script>
       let instructions = window.location.href.split('&Instructions=')[1];
-      if(instructions) {
-        document.querySelector('#instructionTitle').innerHTML = decodeURI(instructions)
+      if (instructions) {
+        document.querySelector('#instructionTitle').innerHTML =
+          decodeURI(instructions);
       }
       let audioUrl = window.location.href.split('AudioSource=')[1];
-      audioUrl = audioUrl.split('&Instructions')[0]
+      audioUrl = audioUrl.split('&Instructions')[0];
       let audio = document.getElementById('audioPlayer');
       let loopButton = document.querySelector('#loopButton');
       let snackBar = document.getElementById('snackbar');
@@ -396,6 +398,8 @@
             '#isTranslationSwitchOn'
           ).checked;
           let txt = e.target.value;
+          txt = txt.toLowerCase();
+
           let newText = txt;
 
           if (isChecked) {
@@ -416,6 +420,33 @@
 
           document.querySelector('#textArea2').value = newText;
         });
+
+      const translateText = async () => {
+        let isChecked = document.querySelector(
+          '#isTranslationSwitchOn'
+        ).checked;
+        let txt = document.querySelector('#textArea1').value;
+        txt = txt.toLowerCase();
+        let newText = txt;
+
+        if (isChecked) {
+          await Promise.all(
+            Object.keys(obj).map((k) => {
+              if (txt.includes(k)) {
+                let toReplace = k;
+                if (k === '.') {
+                  toReplace = '\\.';
+                }
+                const searchRegExp = new RegExp(toReplace, 'g');
+                const replaceWith = obj[k];
+                newText = newText.replace(searchRegExp, replaceWith);
+              }
+            })
+          );
+        }
+
+        document.querySelector('#textArea2').value = newText;
+      };
     </script>
   </body>
 </html>
