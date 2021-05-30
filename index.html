@@ -199,6 +199,7 @@
     </style>
   </head>
   <body>
+    <h2 id="instructionTitle"></h2>
     <!-- The Audio Player -->
     <audio
       id="audioPlayer"
@@ -282,7 +283,12 @@
       </div>
     </div>
     <script>
+      let instructions = window.location.href.split('&Instructions=')[1];
+      if(instructions) {
+        document.querySelector('#instructionTitle').innerHTML = decodeURI(instructions)
+      }
       let audioUrl = window.location.href.split('AudioSource=')[1];
+      audioUrl = audioUrl.split('&Instructions')[0]
       let audio = document.getElementById('audioPlayer');
       let loopButton = document.querySelector('#loopButton');
       let snackBar = document.getElementById('snackbar');
