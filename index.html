@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Audio Player</title>
-
     <style>
       /* The snackbar - position it at the bottom and in the middle of the screen */
       #snackbar {
@@ -75,9 +74,183 @@
           opacity: 0;
         }
       }
+
+      .switch {
+        position: relative;
+        display: inline-block;
+        vertical-align: top;
+        width: 56px;
+        height: 20px;
+        padding: 3px;
+        background-color: white;
+        border-radius: 18px;
+        box-shadow: inset 0 -1px white, inset 0 1px 1px rgba(0, 0, 0, 0.05);
+        cursor: pointer;
+        background-image: -webkit-linear-gradient(top, #eeeeee, white 25px);
+        background-image: -moz-linear-gradient(top, #eeeeee, white 25px);
+        background-image: -o-linear-gradient(top, #eeeeee, white 25px);
+        background-image: linear-gradient(to bottom, #eeeeee, white 25px);
+      }
+
+      .switch-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+      }
+
+      .switch-label {
+        position: relative;
+        display: block;
+        height: inherit;
+        font-size: 10px;
+        text-transform: uppercase;
+        background: #eceeef;
+        border-radius: inherit;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12),
+          inset 0 0 2px rgba(0, 0, 0, 0.15);
+        -webkit-transition: 0.15s ease-out;
+        -moz-transition: 0.15s ease-out;
+        -o-transition: 0.15s ease-out;
+        transition: 0.15s ease-out;
+        -webkit-transition-property: opacity background;
+        -moz-transition-property: opacity background;
+        -o-transition-property: opacity background;
+        transition-property: opacity background;
+      }
+      .switch-label:before,
+      .switch-label:after {
+        position: absolute;
+        top: 50%;
+        margin-top: -0.5em;
+        line-height: 1;
+        -webkit-transition: inherit;
+        -moz-transition: inherit;
+        -o-transition: inherit;
+        transition: inherit;
+      }
+      .switch-label:before {
+        content: attr(data-off);
+        right: 11px;
+        color: #aaa;
+        text-shadow: 0 1px rgba(255, 255, 255, 0.5);
+      }
+      .switch-label:after {
+        content: attr(data-on);
+        left: 11px;
+        color: white;
+        text-shadow: 0 1px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+      }
+      .switch-input:checked ~ .switch-label {
+        background: #47a8d8;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15),
+          inset 0 0 3px rgba(0, 0, 0, 0.2);
+      }
+      .switch-input:checked ~ .switch-label:before {
+        opacity: 0;
+      }
+      .switch-input:checked ~ .switch-label:after {
+        opacity: 1;
+      }
+
+      .switch-handle {
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: 18px;
+        height: 18px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+        background-image: -webkit-linear-gradient(top, white 40%, #f0f0f0);
+        background-image: -moz-linear-gradient(top, white 40%, #f0f0f0);
+        background-image: -o-linear-gradient(top, white 40%, #f0f0f0);
+        background-image: linear-gradient(to bottom, white 40%, #f0f0f0);
+        -webkit-transition: left 0.15s ease-out;
+        -moz-transition: left 0.15s ease-out;
+        -o-transition: left 0.15s ease-out;
+        transition: left 0.15s ease-out;
+      }
+      .switch-handle:before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin: -6px 0 0 -6px;
+        width: 12px;
+        height: 12px;
+        background: #f9f9f9;
+        border-radius: 6px;
+        box-shadow: inset 0 1px rgba(0, 0, 0, 0.02);
+        background-image: -webkit-linear-gradient(top, #eeeeee, white);
+        background-image: -moz-linear-gradient(top, #eeeeee, white);
+        background-image: -o-linear-gradient(top, #eeeeee, white);
+        background-image: linear-gradient(to bottom, #eeeeee, white);
+      }
+      .switch-input:checked ~ .switch-handle {
+        left: 40px;
+        box-shadow: -1px 1px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .switch-green > .switch-input:checked ~ .switch-label {
+        background: #4fb845;
+      }
     </style>
   </head>
   <body>
+    <!-- The Audio Player -->
+    <audio
+      id="audioPlayer"
+      data-loopenabled="false"
+      data-loopval="0"
+      autoplay
+      ontimeupdate="audioloop()"
+      controls
+      src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+    >
+      Your browser does not support the
+      <code>audio</code> element.
+    </audio>
+    <br />
+    <div>
+      <b>SATTS</b>
+      <label class="switch switch-green">
+        <input
+          id="isTranslationSwitchOn"
+          type="checkbox"
+          class="switch-input"
+          checked
+        />
+        <span class="switch-label" data-on="On" data-off="Off"></span>
+        <span class="switch-handle"></span>
+      </label>
+    </div>
+    <br />
+    <!-- Misc action buttons -->
+    <div>
+      <button onclick="rewind2Seconds()">Rewind</button>
+      <button id="loopButton" onclick="enableLoop()">Loop last 2 sec</button>
+    </div>
+
+    <!-- Playback selection slider -->
+    <div class="slidecontainer">
+      <p id="playbackSpeed">Playback speed - 1</p>
+      <label>Select Playback Speed</label>
+      <input
+        type="range"
+        min="0"
+        max="2"
+        step="0.1"
+        defaultvalue="1"
+        name="audioPlaybackSelector"
+        id="audioPlaybackRange"
+      />
+    </div>
+
+    <div id="snackbar">Copied to Clipboard</div>
+
+    <br />
     <!-- The text areas -->
     <div>
       <div>
@@ -102,50 +275,13 @@
           defaultvalue=""
           rows="4"
           cols="50"
+          disabled
         ></textarea>
         <button onclick="copyToClipBoard('textArea2')">
           Copy to clipboard
         </button>
       </div>
     </div>
-
-    <!-- The Audio Player -->
-    <audio
-      id="audioPlayer"
-      data-loopenabled="false"
-      data-loopval="0"
-      autoplay
-      ontimeupdate="audioloop()"
-      controls
-      src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-    >
-      Your browser does not support the
-      <code>audio</code> element.
-    </audio>
-
-    <!-- Misc action buttons -->
-    <div>
-      <button onclick="rewind2Seconds()">Rewind</button>
-      <button id="loopButton" onclick="enableLoop()">Loop last 2 sec</button>
-    </div>
-
-    <!-- Playback selection slider -->
-    <div class="slidecontainer">
-      <p id="playbackSpeed">Playback speed - 1</p>
-      <label>Select Playback Speed</label>
-      <input
-        type="range"
-        min="0"
-        max="2"
-        step="0.1"
-        defaultvalue="1"
-        name="audioPlaybackSelector"
-        id="audioPlaybackRange"
-      />
-    </div>
-
-    <div id="snackbar">Copied to Clipboard</div>
-
     <script>
       let audioUrl = window.location.href.split('AudioSource=')[1];
       let audio = document.getElementById('audioPlayer');
@@ -210,6 +346,71 @@
           loopButton.innerHTML = 'Loop last 2 sec';
         }
       };
+    </script>
+    <script>
+      let obj = {
+        a: 'ا',
+        b: 'ب',
+        p: 'پ',
+        t: 'ت',
+        c: 'ث',
+        j: 'ج',
+        h: 'ح',
+        o: 'خ',
+        d: 'د',
+        z: 'ذ',
+        r: 'ر',
+        ';': 'ز',
+        s: 'س',
+        ':': 'ش',
+        x: 'ص',
+        v: 'ض',
+        u: 'ط',
+        g: 'غ',
+        y: 'ظ',
+        '`': 'ة',
+        '.': 'ؤ',
+        ',': 'ئ',
+        e: 'ء',
+        i: 'ي',
+        w: 'و',
+        '?': 'ه',
+        n: 'ن',
+        m: 'م',
+        l: 'ل',
+        k: 'ك',
+        q: 'ق',
+        f: 'ف',
+        '""': 'ع',
+      };
+
+      document
+        .querySelector('#textArea1')
+        .addEventListener('input', async function (e) {
+          let isChecked = document.querySelector(
+            '#isTranslationSwitchOn'
+          ).checked;
+          let txt = e.target.value;
+          let newText = txt;
+
+          if (isChecked) {
+            await Promise.all(
+              Object.keys(obj).map((k) => {
+                if (txt.includes(k)) {
+                  let toReplace = k;
+                  if (k === '.') {
+                    toReplace = '\\.';
+                  }
+                  const searchRegExp = new RegExp(toReplace, 'g');
+                  const replaceWith = obj[k];
+                  newText = newText.replace(searchRegExp, replaceWith);
+                }
+              })
+            );
+          }
+
+          document.querySelector('#textArea2').value = newText;
+        });
     </script>
   </body>
 </html>
